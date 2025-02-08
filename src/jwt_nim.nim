@@ -1,6 +1,6 @@
 import std/[base64, json, strutils, strformat]
 
-import hmac, secrets
+import jwt_nim/[hmac, secrets]
 
 
 # NOTE: https://www.rfc-editor.org/rfc/rfc7519.txt
