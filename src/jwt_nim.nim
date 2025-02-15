@@ -25,10 +25,16 @@ proc splitToken(token: string): tuple[header, payload, signature: string] {.inli
     result.signature = parts[2]
 
 
-proc sign*(payload, secret: string): string =
+proc sign*(payload, secret: string, digestMod: DigestMod = SHA256): string =
   ## currently implemented hash types SHA256, SHA512
+  var alg: string
+  if digestMod == SHA256:
+    alg = "HS256"
+  else:
+    alg = "HS512"
+
   let header = %* {
-    "alg": "HS256",
+    "alg": alg,
     "typ": "JWT"
   }
 
@@ -38,16 +44,22 @@ proc sign*(payload, secret: string): string =
   var signature = newHmacCtx(
     key=secret,
     msg=fmt"{encodedHeader}.{encodedPayload}",
-    digestMod=SHA256
+    digestMod=digestMod
   )
 
   return fmt"{encodedHeader}.{encodedPayload}.{base64Encode(signature.digest())}"
 
 
-proc sign*(payload: JsonNode, secret: string): string =
+proc sign*(payload: JsonNode, secret: string, digestMod: DigestMod = SHA256): string =
   ## currently implemented hash types SHA256, SHA512
+  var alg: string
+  if digestMod == SHA256:
+    alg = "HS256"
+  else:
+    alg = "HS512"
+
   let header = %* {
-    "alg": "HS256",
+    "alg": alg,
     "typ": "JWT"
   }
 
@@ -57,7 +69,7 @@ proc sign*(payload: JsonNode, secret: string): string =
   var signature = newHmacCtx(
     key=secret,
     msg=fmt"{encodedHeader}.{encodedPayload}",
-    digestMod=SHA256
+    digestMod=digestMod
   )
 
   return fmt"{encodedHeader}.{encodedPayload}.{base64Encode(signature.digest())}"
