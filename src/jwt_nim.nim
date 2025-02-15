@@ -75,9 +75,9 @@ proc sign*(payload: JsonNode, secret: string, digestMod: DigestMod = SHA256): st
   return fmt"{encodedHeader}.{encodedPayload}.{base64Encode(signature.digest())}"
 
 
-proc verify*(token, secret: string): bool =
+proc verify*(token, secret: string, digestMod: DigestMod = SHA256): bool =
   let (header, payload, signature) = token.splitToken()
-  let (_, _, expectedSignature) = sign(base64Decode(payload), secret).splitToken()
+  let (_, _, expectedSignature) = sign(base64Decode(payload), secret, digestMod=digestMod).splitToken()
 
   return signature == expectedSignature
 
